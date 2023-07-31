@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -10,17 +11,20 @@ import (
 var db *gorm.DB
 
 type Goly struct {
-	ID			uint64	`json:"id" gorm:"primaryKey"`
-	Redirect	string	`json:"redirect" gorm:"not null"`
-	Goly		string	`json:"goly" gorm:"unique;not null"`
-	Clicked		uint64	`json:"clicked"`
-	Random		bool	`json:"random"`
+	ID       uint64 `json:"id" gorm:"primaryKey"`
+	Redirect string `json:"redirect" gorm:"not null"`
+	Goly     string `json:"goly" gorm:"unique;not null"`
+	Clicked  uint64 `json:"clicked"`
+	Random   bool   `json:"random"`
 }
-
 
 func Setup() {
 
-	dsn := "host=localhost user=aryaarun password=none dbname=aryaarun port=5432 sslmode=disable"
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		panic("DATABASE_URL environment variable not set")
+	}
+
 	var err error
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
